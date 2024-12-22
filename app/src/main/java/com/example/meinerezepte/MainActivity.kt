@@ -2,6 +2,8 @@ package com.example.meinerezepte
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.util.Log
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -14,6 +16,10 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.remoteconfig.ktx.remoteConfig
+import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -88,6 +94,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        // Lade die Standard-URL direkt in den WebView
         webView.loadUrl("https://flask-recipe-book-ureg.onrender.com/")
     }
 

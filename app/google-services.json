@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "291817047645",
+    "project_id": "rezept-url-api",
+    "storage_bucket": "rezept-url-api.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:291817047645:android:9c32065fb3321d3e8cefb4",
+        "android_client_info": {
+          "package_name": "com.example.meinerezepte"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC2UVT8MaYp-Sb1zU-Y3bhln4JOvnzQJrs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
