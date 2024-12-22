@@ -17,6 +17,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
+    private var isFirstLoad = true
 
     private var filePathCallback: ValueCallback<Array<Uri>>? = null
 
@@ -48,10 +49,21 @@ class MainActivity : AppCompatActivity() {
         webView.webViewClient = object : WebViewClient() {
             override fun onPageStarted(view: WebView?, url: String?, favicon: android.graphics.Bitmap?) {
                 super.onPageStarted(view, url, favicon)
-                // Ladebildschirm anzeigen
-                loadingLayout.visibility = View.VISIBLE
-                webView.visibility = View.GONE
+                if (isFirstLoad) {
+                    loadingLayout.visibility = View.VISIBLE
+                    webView.visibility = View.GONE
+                }
             }
+
+            override fun onPageFinished(view: WebView?, url: String?) {
+                super.onPageFinished(view, url)
+                if (isFirstLoad) {
+                    loadingLayout.visibility = View.GONE
+                    webView.visibility = View.VISIBLE
+                    isFirstLoad = false
+                }
+            }
+
             override fun onReceivedError(
                 view: WebView?,
                 request: WebResourceRequest?,
@@ -60,16 +72,11 @@ class MainActivity : AppCompatActivity() {
                 super.onReceivedError(view, request, error)
                 setContentView(R.layout.activity_error)
                 findViewById<View>(R.id.retryButton).setOnClickListener {
-                    setContentView(R.layout.activity_main)
-                    onCreate(null)
+                    // Neustarten der Aktivität, um eine saubere Initialisierung zu gewährleisten
+                    val intent = intent
+                    finish()
+                    startActivity(intent)
                 }
-            }
-
-            override fun onPageFinished(view: WebView?, url: String?) {
-                super.onPageFinished(view, url)
-                // Ladebildschirm verstecken
-                loadingLayout.visibility = View.GONE
-                webView.visibility = View.VISIBLE
             }
 
             override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
