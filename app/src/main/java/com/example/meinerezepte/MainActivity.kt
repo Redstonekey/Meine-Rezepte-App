@@ -1,6 +1,5 @@
 package com.example.meinerezepte
 
-
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
@@ -89,9 +88,15 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-
-
         webView.loadUrl("https://flask-recipe-book-ureg.onrender.com/")
     }
-}
 
+    override fun onBackPressed() {
+        val webView: WebView = findViewById(R.id.webView)
+        if (webView.canGoBack()) {
+            webView.goBack()
+        } else {
+            super.onBackPressed()
+        }
+    }
+}
