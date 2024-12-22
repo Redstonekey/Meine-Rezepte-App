@@ -2,24 +2,19 @@ package com.example.meinerezepte
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.util.Log
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
+import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.remoteconfig.ktx.remoteConfig
-import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
-
 
 class MainActivity : AppCompatActivity() {
 
@@ -57,6 +52,18 @@ class MainActivity : AppCompatActivity() {
                 loadingLayout.visibility = View.VISIBLE
                 webView.visibility = View.GONE
             }
+            override fun onReceivedError(
+                view: WebView?,
+                request: WebResourceRequest?,
+                error: WebResourceError?
+            ) {
+                super.onReceivedError(view, request, error)
+                setContentView(R.layout.activity_error)
+                findViewById<View>(R.id.retryButton).setOnClickListener {
+                    setContentView(R.layout.activity_main)
+                    onCreate(null)
+                }
+            }
 
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
@@ -67,7 +74,7 @@ class MainActivity : AppCompatActivity() {
 
             override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
                 val url = request?.url.toString()
-                if (url.startsWith("https://wa.me/")) {
+                if (url.startsWith("https://api.whatsapp.com/")) {
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
                     startActivity(intent)
                     return true
@@ -94,8 +101,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Lade die Standard-URL direkt in den WebView
-        webView.loadUrl("https://flask-recipe-book-ureg.onrender.com/")
+        webView.loadUrl("https://flask-recipe-book-ureg.onrender.com/android")
     }
 
     override fun onBackPressed() {
