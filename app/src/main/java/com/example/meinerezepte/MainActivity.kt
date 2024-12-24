@@ -10,6 +10,7 @@ import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
+import android.webkit.WebResourceResponse
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -18,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
     private var isFirstLoad = true
+    private var isLoading = false
 
     private var filePathCallback: ValueCallback<Array<Uri>>? = null
 
@@ -49,19 +51,23 @@ class MainActivity : AppCompatActivity() {
         webView.webViewClient = object : WebViewClient() {
             override fun onPageStarted(view: WebView?, url: String?, favicon: android.graphics.Bitmap?) {
                 super.onPageStarted(view, url, favicon)
+                // Only show loading screen if it's the first load
                 if (isFirstLoad) {
                     loadingLayout.visibility = View.VISIBLE
                     webView.visibility = View.GONE
                 }
+                isLoading = true
             }
 
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
+                // Only hide loading screen after the first load
                 if (isFirstLoad) {
                     loadingLayout.visibility = View.GONE
                     webView.visibility = View.VISIBLE
                     isFirstLoad = false
                 }
+                isLoading = false
             }
 
             override fun onReceivedError(
@@ -77,7 +83,36 @@ class MainActivity : AppCompatActivity() {
                     finish()
                     startActivity(intent)
                 }
+                if (error?.errorCode != WebViewClient.ERROR_HOST_LOOKUP) {
+                    setContentView(R.layout.undefined_error)
+                    findViewById<View>(R.id.retryButton).setOnClickListener {
+                        // Neustarten der Aktivität, um eine saubere Initialisierung zu gewährleisten
+                        val intent = intent
+                        finish()
+                        startActivity(intent)
+                    }
+                }
             }
+            override fun onReceivedHttpError(
+                view: WebView?,
+                request: WebResourceRequest?,
+                errorResponse: WebResourceResponse?
+            ) {
+                super.onReceivedHttpError(view, request, errorResponse)
+
+                // Check if the error is an internal server error (HTTP 500)
+                if (errorResponse?.statusCode == 500) {
+                    setContentView(R.layout.undefined_error)
+                    findViewById<View>(R.id.retryButton).setOnClickListener {
+                        // Neustarten der Aktivität, um eine saubere Initialisierung zu gewährleisten
+                        val intent = intent
+                        finish()
+                        startActivity(intent)
+                    }
+                }
+            }
+
+
 
             override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
                 val url = request?.url.toString()
